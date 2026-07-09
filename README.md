@@ -145,4 +145,4 @@ GET /api/health
 
 # 👨‍💻 Autor
 
-Proyecto desarrollado por Darfex como parte del curso Backend III.
+Proyecto desarrollado por Jeremías Perrota como parte del curso Backend III.
