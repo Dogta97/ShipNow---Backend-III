@@ -64,6 +64,20 @@ src
 ├── app.js
 └── server.js
 ```
+# Decisiones de arquitectura
+
+Se implementó una arquitectura por capas con el objetivo de separar responsabilidades y facilitar el mantenimiento del proyecto.
+
+- Controllers
+Gestionan exclusivamente la comunicación HTTP.
+
+- Services
+Contienen la lógica de negocio de la aplicación. Aquí se realizan validaciones, reglas del dominio y decisiones antes de acceder a los datos.
+
+- Repositories
+Encapsulan todo el acceso a MongoDB mediante Mongoose. Ninguna otra capa conoce cómo se almacenan los datos.
+
+Esta separación permite modificar la lógica de negocio sin afectar el acceso a la base de datos y viceversa, facilitando el testing, la escalabilidad y el mantenimiento del proyecto.
 
 ---
 
@@ -146,3 +160,4 @@ GET /api/health
 # 👨‍💻 Autor
 
 Proyecto desarrollado por Jeremías Perrota como parte del curso Backend III.
+
