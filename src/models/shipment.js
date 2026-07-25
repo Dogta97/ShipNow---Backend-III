@@ -10,6 +10,18 @@ const shipmentSchema = new mongoose.Schema(
             trim: true,
         },
 
+        order: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Order",
+            required: true,
+        },
+
+        deliverer: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Deliverer",
+            default: null,
+        },
+
         origin: {
             type: String,
             required: true,
