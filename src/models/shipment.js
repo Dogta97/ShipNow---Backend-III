@@ -18,7 +18,7 @@ const shipmentSchema = new mongoose.Schema(
 
         deliverer: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Deliverer",
+            ref: "User",
             default: null,
         },
 
