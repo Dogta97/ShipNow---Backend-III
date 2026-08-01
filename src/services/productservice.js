@@ -1,4 +1,4 @@
-import productRepository from "../repositories/productrepository.js";
+import productRepository from "../repositories/product.repository.js";
 import { PRODUCT_STATUS } from "../constants/index.js";
 
 class ProductService {

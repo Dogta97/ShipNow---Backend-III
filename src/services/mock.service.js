@@ -1,10 +1,13 @@
 import { generateMockUsers } from "../mocks/user.mock.js";
 import { generateMockDeliverers } from "../mocks/deliverer.mock.js";
 import { generateMockOrders } from "../mocks/order.mock.js";
+import { generateMockShipments } from "../mocks/shipment.mock.js";
+
 
 import mockRepository from "../repositories/mock.repository.js";
 import userRepository from "../repositories/user.repository.js";
 import productRepository from "../repositories/product.repository.js";
+import orderRepository from "../repositories/order.repository.js";
 
 class MockService {
 
@@ -108,6 +111,56 @@ class MockService {
         return await mockRepository.createOrders(orders);
 
     }
+
+    async generateShipments(quantity) {
+
+    if (!Number.isInteger(quantity) || quantity <= 0) {
+        throw new Error(
+            "La cantidad debe ser un número entero mayor a 0."
+        );
+    }
+
+    if (quantity > 100) {
+        throw new Error(
+            "La cantidad máxima de envíos a generar es 100."
+        );
+    }
+
+    const orders = await orderRepository.getAll();
+
+    const users = await userRepository.getAll();
+
+    const deliverers = users.filter(
+        (user) => user.role === "DELIVERER"
+    );
+
+    if (orders.length === 0) {
+        throw new Error(
+            "No hay pedidos cargados en la base de datos."
+        );
+    }
+
+    if (deliverers.length === 0) {
+        throw new Error(
+            "No hay repartidores cargados en la base de datos."
+        );
+    }
+
+    return generateMockShipments(
+        quantity,
+        orders,
+        deliverers
+    );
+
+}
+
+    async createShipments(quantity) {
+
+      const shipments = await this.generateShipments(quantity);
+
+      return await mockRepository.createShipments(shipments);
+
+   }
 
 }
 

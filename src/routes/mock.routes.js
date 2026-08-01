@@ -11,4 +11,12 @@ router.get("/deliverers", mockController.generateDeliverers);
 
 router.post("/deliverers", mockController.createDeliverers);
 
+router.get("/orders", mockController.generateOrders);
+
+router.post("/orders", mockController.createOrders);
+
+router.get("/shipments", mockController.generateShipments);
+
+router.post("/shipments", mockController.createShipments);
+
 export default router;
