@@ -9,4 +9,6 @@ router.post("/users", mockController.createUsers);
 
 router.get("/deliverers", mockController.generateDeliverers);
 
+router.post("/deliverers", mockController.createDeliverers);
+
 export default router;

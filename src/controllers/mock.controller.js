@@ -84,6 +84,34 @@ class MockController {
 
     }
 
+    async createDeliverers(req, res) {
+
+        try {
+
+            const quantity = req.query.quantity
+                ? Number(req.query.quantity)
+                : 10;
+
+            const deliverers = await mockService.createDeliverers(quantity);
+
+            return res.status(201).json({
+                status: "success",
+                message: "Repartidores de prueba creados correctamente.",
+                count: deliverers.length,
+                payload: deliverers,
+            });
+
+        } catch (error) {
+
+            return res.status(400).json({
+                status: "error",
+                message: error.message,
+            });
+
+        }
+
+    }
+
 }
 
 export default new MockController();
