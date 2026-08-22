@@ -3,23 +3,33 @@ import { generateMockDeliverers } from "../mocks/deliverer.mock.js";
 import { generateMockOrders } from "../mocks/order.mock.js";
 import { generateMockShipments } from "../mocks/shipment.mock.js";
 
-
 import mockRepository from "../repositories/mock.repository.js";
 import userRepository from "../repositories/user.repository.js";
 import productRepository from "../repositories/product.repository.js";
 import orderRepository from "../repositories/order.repository.js";
 
+import AppError from "../errors/AppError.js";
+import { ERROR_TYPES } from "../errors/errorDictionary.js";
+
 class MockService {
 
-    generateUsers(quantity) {
+    validateQuantity(quantity) {
 
         if (!Number.isInteger(quantity) || quantity <= 0) {
-            throw new Error("La cantidad debe ser un número entero mayor a 0.");
+            throw new AppError(ERROR_TYPES.INVALID_QUANTITY);
         }
 
         if (quantity > 100) {
-            throw new Error("La cantidad máxima de usuarios a generar es 100.");
+            throw new AppError(
+                ERROR_TYPES.QUANTITY_LIMIT_EXCEEDED
+            );
         }
+
+    }
+
+    generateUsers(quantity) {
+
+        this.validateQuantity(quantity);
 
         return generateMockUsers(quantity);
 
@@ -27,29 +37,27 @@ class MockService {
 
     async createUsers(quantity) {
 
-        if (!Number.isInteger(quantity) || quantity <= 0) {
-            throw new Error("La cantidad debe ser un número entero mayor a 0.");
-        }
-
-        if (quantity > 100) {
-            throw new Error("La cantidad máxima de usuarios a generar es 100.");
-        }
+        this.validateQuantity(quantity);
 
         const users = generateMockUsers(quantity);
 
-        return await mockRepository.createUsers(users);
+        try {
+
+            return await mockRepository.createUsers(users);
+
+        } catch (error) {
+
+            throw new AppError(
+                ERROR_TYPES.MOCK_DATABASE_ERROR
+            );
+
+        }
 
     }
 
     generateDeliverers(quantity) {
 
-        if (!Number.isInteger(quantity) || quantity <= 0) {
-            throw new Error("La cantidad debe ser un número entero mayor a 0.");
-        }
-
-        if (quantity > 100) {
-            throw new Error("La cantidad máxima de repartidores a generar es 100.");
-        }
+        this.validateQuantity(quantity);
 
         return generateMockDeliverers(quantity);
 
@@ -57,42 +65,46 @@ class MockService {
 
     async createDeliverers(quantity) {
 
-        if (!Number.isInteger(quantity) || quantity <= 0) {
-            throw new Error("La cantidad debe ser un número entero mayor a 0.");
+        this.validateQuantity(quantity);
+
+        const deliverers =
+            generateMockDeliverers(quantity);
+
+        try {
+
+            return await mockRepository.createDeliverers(
+                deliverers
+            );
+
+        } catch (error) {
+
+            throw new AppError(
+                ERROR_TYPES.MOCK_DATABASE_ERROR
+            );
+
         }
-
-        if (quantity > 100) {
-            throw new Error("La cantidad máxima de repartidores a generar es 100.");
-        }
-
-        const deliverers = generateMockDeliverers(quantity);
-
-        return await mockRepository.createDeliverers(deliverers);
 
     }
 
     async generateOrders(quantity) {
 
-        if (!Number.isInteger(quantity) || quantity <= 0) {
-            throw new Error("La cantidad debe ser un número entero mayor a 0.");
-        }
+        this.validateQuantity(quantity);
 
-        if (quantity > 100) {
-            throw new Error("La cantidad máxima de pedidos a generar es 100.");
-        }
+        const users =
+            await userRepository.getAll();
 
-        const users = await userRepository.getAll();
-        const products = await productRepository.getAll();
+        const products =
+            await productRepository.getAll();
 
         if (users.length === 0) {
-            throw new Error(
-                "No hay usuarios cargados en la base de datos."
+            throw new AppError(
+                ERROR_TYPES.NO_USERS_AVAILABLE
             );
         }
 
         if (products.length === 0) {
-            throw new Error(
-                "No hay productos cargados en la base de datos."
+            throw new AppError(
+                ERROR_TYPES.NO_PRODUCTS_AVAILABLE
             );
         }
 
@@ -106,61 +118,80 @@ class MockService {
 
     async createOrders(quantity) {
 
-        const orders = await this.generateOrders(quantity);
+        const orders =
+            await this.generateOrders(quantity);
 
-        return await mockRepository.createOrders(orders);
+        try {
+
+            return await mockRepository.createOrders(
+                orders
+            );
+
+        } catch (error) {
+
+            throw new AppError(
+                ERROR_TYPES.MOCK_DATABASE_ERROR
+            );
+
+        }
 
     }
 
     async generateShipments(quantity) {
 
-    if (!Number.isInteger(quantity) || quantity <= 0) {
-        throw new Error(
-            "La cantidad debe ser un número entero mayor a 0."
+        this.validateQuantity(quantity);
+
+        const orders =
+            await orderRepository.getAll();
+
+        const users =
+            await userRepository.getAll();
+
+        const deliverers = users.filter(
+            (user) =>
+                user.role === "DELIVERER"
         );
-    }
 
-    if (quantity > 100) {
-        throw new Error(
-            "La cantidad máxima de envíos a generar es 100."
+        if (orders.length === 0) {
+            throw new AppError(
+                ERROR_TYPES.NO_ORDERS_AVAILABLE
+            );
+        }
+
+        if (deliverers.length === 0) {
+            throw new AppError(
+                ERROR_TYPES.NO_DELIVERERS_AVAILABLE
+            );
+        }
+
+        return generateMockShipments(
+            quantity,
+            orders,
+            deliverers
         );
+
     }
-
-    const orders = await orderRepository.getAll();
-
-    const users = await userRepository.getAll();
-
-    const deliverers = users.filter(
-        (user) => user.role === "DELIVERER"
-    );
-
-    if (orders.length === 0) {
-        throw new Error(
-            "No hay pedidos cargados en la base de datos."
-        );
-    }
-
-    if (deliverers.length === 0) {
-        throw new Error(
-            "No hay repartidores cargados en la base de datos."
-        );
-    }
-
-    return generateMockShipments(
-        quantity,
-        orders,
-        deliverers
-    );
-
-}
 
     async createShipments(quantity) {
 
-      const shipments = await this.generateShipments(quantity);
+        const shipments =
+            await this.generateShipments(quantity);
 
-      return await mockRepository.createShipments(shipments);
+        try {
 
-   }
+            return await mockRepository.createShipments(
+                shipments
+            );
+
+        } catch (error) {
+
+            throw new AppError(
+                ERROR_TYPES.MOCK_DATABASE_ERROR
+            );
+
+        }
+
+    }
 
 }
 

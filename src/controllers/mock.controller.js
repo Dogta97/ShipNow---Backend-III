@@ -2,7 +2,7 @@ import mockService from "../services/mock.service.js";
 
 class MockController {
 
-    async generateUsers(req, res) {
+    async generateUsers(req, res, next) {
 
         try {
 
@@ -10,7 +10,8 @@ class MockController {
                 ? Number(req.query.quantity)
                 : 10;
 
-            const users = mockService.generateUsers(quantity);
+            const users =
+                mockService.generateUsers(quantity);
 
             return res.status(200).json({
                 status: "success",
@@ -20,16 +21,13 @@ class MockController {
 
         } catch (error) {
 
-            return res.status(400).json({
-                status: "error",
-                message: error.message,
-            });
+            next(error);
 
         }
 
     }
 
-    async createUsers(req, res) {
+    async createUsers(req, res, next) {
 
         try {
 
@@ -37,27 +35,26 @@ class MockController {
                 ? Number(req.query.quantity)
                 : 10;
 
-            const users = await mockService.createUsers(quantity);
+            const users =
+                await mockService.createUsers(quantity);
 
             return res.status(201).json({
                 status: "success",
-                message: "Usuarios de prueba creados correctamente.",
+                message:
+                    "Usuarios de prueba creados correctamente.",
                 count: users.length,
                 payload: users,
             });
 
         } catch (error) {
 
-            return res.status(400).json({
-                status: "error",
-                message: error.message,
-            });
+            next(error);
 
         }
 
     }
 
-    async generateDeliverers(req, res) {
+    async generateDeliverers(req, res, next) {
 
         try {
 
@@ -65,7 +62,8 @@ class MockController {
                 ? Number(req.query.quantity)
                 : 10;
 
-            const deliverers = mockService.generateDeliverers(quantity);
+            const deliverers =
+                mockService.generateDeliverers(quantity);
 
             return res.status(200).json({
                 status: "success",
@@ -75,16 +73,13 @@ class MockController {
 
         } catch (error) {
 
-            return res.status(400).json({
-                status: "error",
-                message: error.message,
-            });
+            next(error);
 
         }
 
     }
 
-    async createDeliverers(req, res) {
+    async createDeliverers(req, res, next) {
 
         try {
 
@@ -92,27 +87,26 @@ class MockController {
                 ? Number(req.query.quantity)
                 : 10;
 
-            const deliverers = await mockService.createDeliverers(quantity);
+            const deliverers =
+                await mockService.createDeliverers(quantity);
 
             return res.status(201).json({
                 status: "success",
-                message: "Repartidores de prueba creados correctamente.",
+                message:
+                    "Repartidores de prueba creados correctamente.",
                 count: deliverers.length,
                 payload: deliverers,
             });
 
         } catch (error) {
 
-            return res.status(400).json({
-                status: "error",
-                message: error.message,
-            });
+            next(error);
 
         }
 
     }
 
-    async generateOrders(req, res) {
+    async generateOrders(req, res, next) {
 
         try {
 
@@ -120,7 +114,8 @@ class MockController {
                 ? Number(req.query.quantity)
                 : 10;
 
-            const orders = await mockService.generateOrders(quantity);
+            const orders =
+                await mockService.generateOrders(quantity);
 
             return res.status(200).json({
                 status: "success",
@@ -130,16 +125,13 @@ class MockController {
 
         } catch (error) {
 
-            return res.status(400).json({
-                status: "error",
-                message: error.message,
-            });
+            next(error);
 
         }
 
     }
 
-    async createOrders(req, res) {
+    async createOrders(req, res, next) {
 
         try {
 
@@ -147,80 +139,76 @@ class MockController {
                 ? Number(req.query.quantity)
                 : 10;
 
-            const orders = await mockService.createOrders(quantity);
+            const orders =
+                await mockService.createOrders(quantity);
 
             return res.status(201).json({
                 status: "success",
-                message: "Pedidos de prueba creados correctamente.",
+                message:
+                    "Pedidos de prueba creados correctamente.",
                 count: orders.length,
                 payload: orders,
             });
 
         } catch (error) {
 
-            return res.status(400).json({
-                status: "error",
-                message: error.message,
-            });
+            next(error);
 
         }
 
     }
 
-    async generateShipments(req, res) {
+    async generateShipments(req, res, next) {
 
-    try {
+        try {
 
-        const quantity = req.query.quantity
-            ? Number(req.query.quantity)
-            : 10;
+            const quantity = req.query.quantity
+                ? Number(req.query.quantity)
+                : 10;
 
-        const shipments = await mockService.generateShipments(quantity);
+            const shipments =
+                await mockService.generateShipments(quantity);
 
-        return res.status(200).json({
-            status: "success",
-            count: shipments.length,
-            payload: shipments,
-        });
+            return res.status(200).json({
+                status: "success",
+                count: shipments.length,
+                payload: shipments,
+            });
 
-    } catch (error) {
+        } catch (error) {
 
-        return res.status(400).json({
-            status: "error",
-            message: error.message,
-        });
+            next(error);
 
-    }
-
-}
-
-async createShipments(req, res) {
-
-    try {
-
-        const quantity = req.query.quantity
-            ? Number(req.query.quantity)
-            : 10;
-
-        const shipments = await mockService.createShipments(quantity);
-
-        return res.status(201).json({
-            status: "success",
-            message: "Envíos de prueba creados correctamente.",
-            count: shipments.length,
-            payload: shipments,
-        });
-
-    } catch (error) {
-
-        return res.status(400).json({
-            status: "error",
-            message: error.message,
-        });
+        }
 
     }
 
-}
+    async createShipments(req, res, next) {
+
+        try {
+
+            const quantity = req.query.quantity
+                ? Number(req.query.quantity)
+                : 10;
+
+            const shipments =
+                await mockService.createShipments(quantity);
+
+            return res.status(201).json({
+                status: "success",
+                message:
+                    "Envíos de prueba creados correctamente.",
+                count: shipments.length,
+                payload: shipments,
+            });
+
+        } catch (error) {
+
+            next(error);
+
+        }
+
+    }
 
 }
 

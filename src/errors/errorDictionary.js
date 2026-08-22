@@ -58,4 +58,40 @@ export const ERROR_TYPES = Object.freeze({
         message: "Ocurrió un error interno en el servidor.",
         statusCode: 500,
     },
+
+    TRACKING_NUMBER_ALREADY_EXISTS: {
+        code: "TRACKING_NUMBER_ALREADY_EXISTS",
+        message: "El número de seguimiento ya existe.",
+        statusCode: 400,
+    },
+
+    NO_USERS_AVAILABLE: {
+        code: "NO_USERS_AVAILABLE",
+        message: "No hay usuarios cargados en la base de datos.",
+        statusCode: 400,
+    },
+
+    NO_PRODUCTS_AVAILABLE: {
+        code: "NO_PRODUCTS_AVAILABLE",
+        message: "No hay productos cargados en la base de datos.",
+        statusCode: 400,
+    },
+
+    NO_ORDERS_AVAILABLE: {
+        code: "NO_ORDERS_AVAILABLE",
+        message: "No hay pedidos cargados en la base de datos.",
+        statusCode: 400,
+    },
+
+    NO_DELIVERERS_AVAILABLE: {
+        code: "NO_DELIVERERS_AVAILABLE",
+        message: "No hay repartidores cargados en la base de datos.",
+        statusCode: 400,
+    },
+
+    MOCK_DATABASE_ERROR: {
+        code: "MOCK_DATABASE_ERROR",
+        message: "Ocurrió un error al guardar los datos de prueba.",
+        statusCode: 500,
+    },
 });

@@ -1,4 +1,6 @@
 import shipmentRepository from "../repositories/shipmentrepository.js";
+import AppError from "../errors/AppError.js";
+import { ERROR_TYPES } from "../errors/errorDictionary.js";
 
 class ShipmentService {
 
@@ -7,7 +9,15 @@ class ShipmentService {
     }
 
     async getShipmentById(id) {
-        return await shipmentRepository.getById(id);
+
+        const shipment = await shipmentRepository.getById(id);
+
+        if (!shipment) {
+            throw new AppError(ERROR_TYPES.SHIPMENT_NOT_FOUND);
+        }
+
+        return shipment;
+
     }
 
     async createShipment(shipmentData) {
@@ -17,26 +27,48 @@ class ShipmentService {
             !shipmentData.origin ||
             !shipmentData.destination
         ) {
-            throw new Error("Tracking, origen y destino son obligatorios.");
+            throw new AppError(ERROR_TYPES.INVALID_DATA);
         }
 
-        const shipmentExists = await shipmentRepository.getByTrackingNumber(
-            shipmentData.trackingNumber
-        );
+        const shipmentExists =
+            await shipmentRepository.getByTrackingNumber(
+                shipmentData.trackingNumber
+            );
 
         if (shipmentExists) {
-            throw new Error("El número de seguimiento ya existe.");
+            throw new AppError(
+                ERROR_TYPES.TRACKING_NUMBER_ALREADY_EXISTS
+            );
         }
 
         return await shipmentRepository.create(shipmentData);
+
     }
 
     async updateShipment(id, shipmentData) {
-        return await shipmentRepository.update(id, shipmentData);
+
+        const shipment =
+            await shipmentRepository.update(id, shipmentData);
+
+        if (!shipment) {
+            throw new AppError(ERROR_TYPES.SHIPMENT_NOT_FOUND);
+        }
+
+        return shipment;
+
     }
 
     async deleteShipment(id) {
-        return await shipmentRepository.delete(id);
+
+        const shipment =
+            await shipmentRepository.delete(id);
+
+        if (!shipment) {
+            throw new AppError(ERROR_TYPES.SHIPMENT_NOT_FOUND);
+        }
+
+        return shipment;
+
     }
 
 }

@@ -2,7 +2,7 @@ import shipmentService from "../services/shipmentservice.js";
 
 class ShipmentController {
 
-    async getAllShipments(req, res) {
+    async getAllShipments(req, res, next) {
 
         try {
 
@@ -12,15 +12,13 @@ class ShipmentController {
 
         } catch (error) {
 
-            res.status(500).json({
-                message: error.message,
-            });
+            next(error);
 
         }
 
     }
 
-    async getShipmentById(req, res) {
+    async getShipmentById(req, res, next) {
 
         try {
 
@@ -28,25 +26,17 @@ class ShipmentController {
 
             const shipment = await shipmentService.getShipmentById(id);
 
-            if (!shipment) {
-                return res.status(404).json({
-                    message: "Envío no encontrado.",
-                });
-            }
-
             res.status(200).json(shipment);
 
         } catch (error) {
 
-            res.status(500).json({
-                message: error.message,
-            });
+            next(error);
 
         }
 
     }
 
-    async createShipment(req, res) {
+    async createShipment(req, res, next) {
 
         try {
 
@@ -56,53 +46,40 @@ class ShipmentController {
 
         } catch (error) {
 
-            res.status(400).json({
-                message: error.message,
-            });
+            next(error);
 
         }
 
     }
 
-    async updateShipment(req, res) {
+    async updateShipment(req, res, next) {
 
         try {
 
             const { id } = req.params;
 
-            const shipment = await shipmentService.updateShipment(id, req.body);
-
-            if (!shipment) {
-                return res.status(404).json({
-                    message: "Envío no encontrado.",
-                });
-            }
+            const shipment = await shipmentService.updateShipment(
+                id,
+                req.body
+            );
 
             res.status(200).json(shipment);
 
         } catch (error) {
 
-            res.status(400).json({
-                message: error.message,
-            });
+            next(error);
 
         }
 
     }
 
-    async deleteShipment(req, res) {
+    async deleteShipment(req, res, next) {
 
         try {
 
             const { id } = req.params;
 
-            const shipment = await shipmentService.deleteShipment(id);
-
-            if (!shipment) {
-                return res.status(404).json({
-                    message: "Envío no encontrado.",
-                });
-            }
+            await shipmentService.deleteShipment(id);
 
             res.status(200).json({
                 message: "Envío eliminado correctamente.",
@@ -110,9 +87,7 @@ class ShipmentController {
 
         } catch (error) {
 
-            res.status(500).json({
-                message: error.message,
-            });
+            next(error);
 
         }
 

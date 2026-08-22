@@ -1,4 +1,6 @@
 import userRepository from "../repositories/user.repository.js";
+import AppError from "../errors/AppError.js";
+import { ERROR_TYPES } from "../errors/errorDictionary.js";
 
 class UserService {
 
@@ -7,24 +9,49 @@ class UserService {
     }
 
     async getUserById(id) {
-        return await userRepository.getById(id);
+
+        const user = await userRepository.getById(id);
+
+        if (!user) {
+            throw new AppError(ERROR_TYPES.USER_NOT_FOUND);
+        }
+
+        return user;
+
     }
 
     async createUser(userData) {
 
         if (!userData.name || !userData.email) {
-            throw new Error("Nombre y email son obligatorios.");
+            throw new AppError(ERROR_TYPES.INVALID_DATA);
         }
 
         return await userRepository.create(userData);
+
     }
 
     async updateUser(id, userData) {
-        return await userRepository.update(id, userData);
+
+        const user = await userRepository.update(id, userData);
+
+        if (!user) {
+            throw new AppError(ERROR_TYPES.USER_NOT_FOUND);
+        }
+
+        return user;
+
     }
 
     async deleteUser(id) {
-        return await userRepository.delete(id);
+
+        const user = await userRepository.delete(id);
+
+        if (!user) {
+            throw new AppError(ERROR_TYPES.USER_NOT_FOUND);
+        }
+
+        return user;
+
     }
 
 }
