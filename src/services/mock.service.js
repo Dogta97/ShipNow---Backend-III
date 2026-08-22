@@ -10,6 +10,7 @@ import orderRepository from "../repositories/order.repository.js";
 
 import AppError from "../errors/AppError.js";
 import { ERROR_TYPES } from "../errors/errorDictionary.js";
+import { USER_ROLES } from "../constants/index.js";
 
 class MockService {
 
@@ -149,7 +150,7 @@ class MockService {
 
         const deliverers = users.filter(
             (user) =>
-                user.role === "DELIVERER"
+                user.role === USER_ROLES.DELIVERER
         );
 
         if (orders.length === 0) {

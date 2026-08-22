@@ -94,4 +94,16 @@ export const ERROR_TYPES = Object.freeze({
         message: "Ocurrió un error al guardar los datos de prueba.",
         statusCode: 500,
     },
+
+    PRODUCT_NOT_FOUND: {
+        code: "PRODUCT_NOT_FOUND",
+        message: "El producto no fue encontrado.",
+        statusCode: 404,
+    },
+
+    INVALID_PRODUCT_DATA: {
+        code: "INVALID_PRODUCT_DATA",
+        message: "Los datos del producto no son válidos.",
+        statusCode: 400,
+    },
 });
