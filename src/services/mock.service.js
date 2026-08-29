@@ -12,18 +12,26 @@ import AppError from "../errors/AppError.js";
 import { ERROR_TYPES } from "../errors/errorDictionary.js";
 import { USER_ROLES } from "../constants/index.js";
 
+import logger from "../config/logger.js";
+
 class MockService {
 
     validateQuantity(quantity) {
 
         if (!Number.isInteger(quantity) || quantity <= 0) {
-            throw new AppError(ERROR_TYPES.INVALID_QUANTITY);
+
+            throw new AppError(
+                ERROR_TYPES.INVALID_QUANTITY
+            );
+
         }
 
         if (quantity > 100) {
+
             throw new AppError(
                 ERROR_TYPES.QUANTITY_LIMIT_EXCEEDED
             );
+
         }
 
     }
@@ -32,7 +40,13 @@ class MockService {
 
         this.validateQuantity(quantity);
 
-        return generateMockUsers(quantity);
+        const users = generateMockUsers(quantity);
+
+        logger.info(
+            `Se generaron ${quantity} usuarios mock sin persistir.`
+        );
+
+        return users;
 
     }
 
@@ -44,9 +58,20 @@ class MockService {
 
         try {
 
-            return await mockRepository.createUsers(users);
+            const createdUsers =
+                await mockRepository.createUsers(users);
+
+            logger.info(
+                `Se guardaron ${createdUsers.length} usuarios mock en MongoDB.`
+            );
+
+            return createdUsers;
 
         } catch (error) {
+
+            logger.error(
+                `Error al guardar usuarios mock: ${error.message}`
+            );
 
             throw new AppError(
                 ERROR_TYPES.MOCK_DATABASE_ERROR
@@ -60,7 +85,14 @@ class MockService {
 
         this.validateQuantity(quantity);
 
-        return generateMockDeliverers(quantity);
+        const deliverers =
+            generateMockDeliverers(quantity);
+
+        logger.info(
+            `Se generaron ${quantity} repartidores mock sin persistir.`
+        );
+
+        return deliverers;
 
     }
 
@@ -73,11 +105,22 @@ class MockService {
 
         try {
 
-            return await mockRepository.createDeliverers(
-                deliverers
+            const createdDeliverers =
+                await mockRepository.createDeliverers(
+                    deliverers
+                );
+
+            logger.info(
+                `Se guardaron ${createdDeliverers.length} repartidores mock en MongoDB.`
             );
 
+            return createdDeliverers;
+
         } catch (error) {
+
+            logger.error(
+                `Error al guardar repartidores mock: ${error.message}`
+            );
 
             throw new AppError(
                 ERROR_TYPES.MOCK_DATABASE_ERROR
@@ -98,22 +141,32 @@ class MockService {
             await productRepository.getAll();
 
         if (users.length === 0) {
+
             throw new AppError(
                 ERROR_TYPES.NO_USERS_AVAILABLE
             );
+
         }
 
         if (products.length === 0) {
+
             throw new AppError(
                 ERROR_TYPES.NO_PRODUCTS_AVAILABLE
             );
+
         }
 
-        return generateMockOrders(
+        const orders = generateMockOrders(
             quantity,
             users,
             products
         );
+
+        logger.info(
+            `Se generaron ${quantity} pedidos mock sin persistir.`
+        );
+
+        return orders;
 
     }
 
@@ -124,11 +177,22 @@ class MockService {
 
         try {
 
-            return await mockRepository.createOrders(
-                orders
+            const createdOrders =
+                await mockRepository.createOrders(
+                    orders
+                );
+
+            logger.info(
+                `Se guardaron ${createdOrders.length} pedidos mock en MongoDB.`
             );
 
+            return createdOrders;
+
         } catch (error) {
+
+            logger.error(
+                `Error al guardar pedidos mock: ${error.message}`
+            );
 
             throw new AppError(
                 ERROR_TYPES.MOCK_DATABASE_ERROR
@@ -154,22 +218,32 @@ class MockService {
         );
 
         if (orders.length === 0) {
+
             throw new AppError(
                 ERROR_TYPES.NO_ORDERS_AVAILABLE
             );
+
         }
 
         if (deliverers.length === 0) {
+
             throw new AppError(
                 ERROR_TYPES.NO_DELIVERERS_AVAILABLE
             );
+
         }
 
-        return generateMockShipments(
+        const shipments = generateMockShipments(
             quantity,
             orders,
             deliverers
         );
+
+        logger.info(
+            `Se generaron ${quantity} envíos mock sin persistir.`
+        );
+
+        return shipments;
 
     }
 
@@ -180,11 +254,22 @@ class MockService {
 
         try {
 
-            return await mockRepository.createShipments(
-                shipments
+            const createdShipments =
+                await mockRepository.createShipments(
+                    shipments
+                );
+
+            logger.info(
+                `Se guardaron ${createdShipments.length} envíos mock en MongoDB.`
             );
 
+            return createdShipments;
+
         } catch (error) {
+
+            logger.error(
+                `Error al guardar envíos mock: ${error.message}`
+            );
 
             throw new AppError(
                 ERROR_TYPES.MOCK_DATABASE_ERROR
