@@ -7,6 +7,9 @@ import mockRoutes from "./routes/mock.routes.js";
 import productRoutes from "./routes/product.routes.js";
 import loggerRoutes from "./routes/logger.routes.js";
 
+import AppError from "./errors/AppError.js";
+import { ERROR_TYPES } from "./errors/errorDictionary.js";
+
 import errorMiddleware from "./middlewares/error.middleware.js";
 
 const app = express();
@@ -27,6 +30,17 @@ app.use("/api/shipments", shipmentRoutes);
 app.use("/api/health", healthRoutes);
 app.use("/api/mocks", mockRoutes);
 app.use("/api/logger", loggerRoutes);
+
+app.use((req, res, next) => {
+
+    next(
+        new AppError(
+            ERROR_TYPES.ROUTE_NOT_FOUND
+        )
+    );
+
+});
+
 
 app.use(errorMiddleware);
 

@@ -50,7 +50,7 @@ const transports = [
     new winston.transports.Console({
 
         level:
-            config.NODE_ENV === "production"
+            config.nodeEnv === "production"
                 ? "info"
                 : "debug",
 

@@ -1,4 +1,5 @@
 export const ERROR_TYPES = Object.freeze({
+
     USER_NOT_FOUND: {
         code: "USER_NOT_FOUND",
         message: "El usuario no fue encontrado.",
@@ -20,6 +21,12 @@ export const ERROR_TYPES = Object.freeze({
     SHIPMENT_NOT_FOUND: {
         code: "SHIPMENT_NOT_FOUND",
         message: "El envío no fue encontrado.",
+        statusCode: 404,
+    },
+
+    ROUTE_NOT_FOUND: {
+        code: "ROUTE_NOT_FOUND",
+        message: "La ruta solicitada no existe.",
         statusCode: 404,
     },
 
@@ -106,4 +113,5 @@ export const ERROR_TYPES = Object.freeze({
         message: "Ocurrió un error interno en el servidor.",
         statusCode: 500,
     },
+
 });
