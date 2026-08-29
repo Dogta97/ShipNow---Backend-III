@@ -23,6 +23,12 @@ export const ERROR_TYPES = Object.freeze({
         statusCode: 404,
     },
 
+    INVALID_ID: {
+        code: "INVALID_ID",
+        message: "El ID proporcionado no es válido.",
+        statusCode: 400,
+    },
+
     INVALID_QUANTITY: {
         code: "INVALID_QUANTITY",
         message: "La cantidad debe ser un número entero mayor a 0.",
@@ -47,16 +53,10 @@ export const ERROR_TYPES = Object.freeze({
         statusCode: 400,
     },
 
-    DATABASE_ERROR: {
-        code: "DATABASE_ERROR",
-        message: "Ocurrió un error al acceder a la base de datos.",
-        statusCode: 500,
-    },
-
-    INTERNAL_ERROR: {
-        code: "INTERNAL_ERROR",
-        message: "Ocurrió un error interno en el servidor.",
-        statusCode: 500,
+    INVALID_PRODUCT_DATA: {
+        code: "INVALID_PRODUCT_DATA",
+        message: "Los datos del producto no son válidos.",
+        statusCode: 400,
     },
 
     TRACKING_NUMBER_ALREADY_EXISTS: {
@@ -95,15 +95,15 @@ export const ERROR_TYPES = Object.freeze({
         statusCode: 500,
     },
 
-    PRODUCT_NOT_FOUND: {
-        code: "PRODUCT_NOT_FOUND",
-        message: "El producto no fue encontrado.",
-        statusCode: 404,
+    DATABASE_ERROR: {
+        code: "DATABASE_ERROR",
+        message: "Ocurrió un error al acceder a la base de datos.",
+        statusCode: 500,
     },
 
-    INVALID_PRODUCT_DATA: {
-        code: "INVALID_PRODUCT_DATA",
-        message: "Los datos del producto no son válidos.",
-        statusCode: 400,
+    INTERNAL_ERROR: {
+        code: "INTERNAL_ERROR",
+        message: "Ocurrió un error interno en el servidor.",
+        statusCode: 500,
     },
 });

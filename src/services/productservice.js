@@ -33,7 +33,9 @@ class ProductService {
 
         if (
             !productData.name ||
+            !productData.name.trim() ||
             !productData.description ||
+            !productData.description.trim() ||
             productData.price === undefined ||
             productData.stock === undefined
         ) {
