@@ -13,7 +13,7 @@ const swaggerOptions = {
             version: "1.0.0",
 
             description:
-                "API REST para la gestión de usuarios, pedidos, entregas, datos de prueba y herramientas internas de ShipNow.",
+                "API REST para la gestión de usuarios, pedidos, entregas, archivos, datos de prueba y herramientas internas de ShipNow.",
 
         },
 
@@ -60,6 +60,15 @@ const swaggerOptions = {
 
             {
 
+                name: "Uploads",
+
+                description:
+                    "Carga y asociación de archivos mediante multipart/form-data.",
+
+            },
+
+            {
+
                 name: "Mocks",
 
                 description:
@@ -81,6 +90,108 @@ const swaggerOptions = {
         components: {
 
             schemas: {
+
+                FileMetadata: {
+
+                    type: "object",
+
+                    properties: {
+
+                        originalName: {
+
+                            type: "string",
+
+                            description:
+                                "Nombre original del archivo.",
+
+                            example:
+                                "documento.png",
+
+                        },
+
+                        filename: {
+
+                            type: "string",
+
+                            description:
+                                "Nombre generado por el servidor.",
+
+                            example:
+                                "1788119491404-258596621.png",
+
+                        },
+
+                        path: {
+
+                            type: "string",
+
+                            description:
+                                "Ruta relativa donde se almacena el archivo.",
+
+                            example:
+                                "uploads/users/1788119491404-258596621.png",
+
+                        },
+
+                        mimetype: {
+
+                            type: "string",
+
+                            description:
+                                "Tipo MIME del archivo.",
+
+                            example:
+                                "image/png",
+
+                        },
+
+                        size: {
+
+                            type: "integer",
+
+                            description:
+                                "Tamaño del archivo en bytes.",
+
+                            example:
+                                215802,
+
+                        },
+
+                        documentType: {
+
+                            type: "string",
+
+                            enum: [
+                                "DNI",
+                                "PASSPORT",
+                                "LICENSE",
+                                "OTHER",
+                                "RECEIPT",
+                            ],
+
+                            description:
+                                "Tipo de documento asociado al archivo.",
+
+                            example:
+                                "DNI",
+
+                        },
+
+                        uploadedAt: {
+
+                            type: "string",
+
+                            format: "date-time",
+
+                            description:
+                                "Fecha y hora en que se realizó la carga.",
+
+                        },
+
+                    },
+
+                },
+
 
                 User: {
 
@@ -141,6 +252,22 @@ const swaggerOptions = {
 
                             example:
                                 "USER",
+
+                        },
+
+                        documents: {
+
+                            type: "array",
+
+                            description:
+                                "Documentos asociados al usuario.",
+
+                            items: {
+
+                                $ref:
+                                    "#/components/schemas/FileMetadata",
+
+                            },
 
                         },
 
@@ -295,6 +422,26 @@ const swaggerOptions = {
 
                             example:
                                 "NORMAL",
+
+                        },
+
+                        receipt: {
+
+                            allOf: [
+
+                                {
+
+                                    $ref:
+                                        "#/components/schemas/FileMetadata",
+
+                                },
+
+                            ],
+
+                            nullable: true,
+
+                            description:
+                                "Metadata del comprobante asociado al pedido.",
 
                         },
 

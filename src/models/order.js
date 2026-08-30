@@ -1,5 +1,50 @@
 import mongoose from "mongoose";
-import { ORDER_PRIORITY, ORDER_STATUS } from "../constants/index.js";
+import {
+    ORDER_PRIORITY,
+    ORDER_STATUS,
+} from "../constants/index.js";
+
+const receiptSchema = new mongoose.Schema(
+    {
+        originalName: {
+            type: String,
+            required: true,
+        },
+
+        filename: {
+            type: String,
+            required: true,
+        },
+
+        path: {
+            type: String,
+            required: true,
+        },
+
+        mimetype: {
+            type: String,
+            required: true,
+        },
+
+        size: {
+            type: Number,
+            required: true,
+        },
+
+        documentType: {
+            type: String,
+            default: "RECEIPT",
+        },
+
+        uploadedAt: {
+            type: Date,
+            default: Date.now,
+        },
+    },
+    {
+        _id: false,
+    }
+);
 
 const orderSchema = new mongoose.Schema(
     {
@@ -35,6 +80,11 @@ const orderSchema = new mongoose.Schema(
             type: String,
             enum: Object.values(ORDER_PRIORITY),
             default: ORDER_PRIORITY.NORMAL,
+        },
+
+        receipt: {
+            type: receiptSchema,
+            default: null,
         },
     },
     {

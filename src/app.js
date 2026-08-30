@@ -8,12 +8,12 @@ import shipmentRoutes from "./routes/shipment.routes.js";
 import healthRoutes from "./routes/health.routes.js";
 import mockRoutes from "./routes/mock.routes.js";
 import loggerRoutes from "./routes/logger.routes.js";
+import uploadRoutes from "./routes/upload.routes.js";
 
 import swaggerSpec from "./config/swagger.config.js";
 
 import AppError from "./errors/AppError.js";
 import { ERROR_TYPES } from "./errors/errorDictionary.js";
-
 import errorMiddleware from "./middlewares/error.middleware.js";
 
 const app = express();
@@ -39,6 +39,8 @@ app.use("/api/shipments", shipmentRoutes);
 app.use("/api/health", healthRoutes);
 app.use("/api/mocks", mockRoutes);
 app.use("/api/logger", loggerRoutes);
+app.use("/api/uploads", uploadRoutes);
+
 
 app.use((req, res, next) => {
     next(

@@ -5,11 +5,13 @@ class AppError extends Error {
         super(errorType.message);
 
         this.name = "AppError";
-
         this.code = errorType.code;
-
         this.statusCode = errorType.statusCode;
 
+        Error.captureStackTrace(
+            this,
+            this.constructor
+        );
     }
 
 }

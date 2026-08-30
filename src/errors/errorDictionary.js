@@ -96,6 +96,46 @@ export const ERROR_TYPES = Object.freeze({
         statusCode: 400,
     },
 
+    // =========================
+    // FILES / MULTER
+    // =========================
+
+    FILE_REQUIRED: {
+        code: "FILE_REQUIRED",
+        message: "El archivo es obligatorio.",
+        statusCode: 400,
+    },
+
+    INVALID_FILE_TYPE: {
+        code: "INVALID_FILE_TYPE",
+        message: "El tipo de archivo no está permitido.",
+        statusCode: 400,
+    },
+
+    FILE_TOO_LARGE: {
+        code: "FILE_TOO_LARGE",
+        message: "El archivo supera el tamaño máximo permitido de 5 MB.",
+        statusCode: 400,
+    },
+
+    INVALID_DOCUMENT_TYPE: {
+        code: "INVALID_DOCUMENT_TYPE",
+        message: "El tipo de documento no es válido.",
+        statusCode: 400,
+    },
+
+    INVALID_FILE_FIELD: {
+        code: "INVALID_FILE_FIELD",
+        message: "El campo utilizado para enviar el archivo no es válido.",
+        statusCode: 400,
+    },
+
+    FILE_UPLOAD_ERROR: {
+        code: "FILE_UPLOAD_ERROR",
+        message: "Ocurrió un error al procesar la carga del archivo.",
+        statusCode: 500,
+    },
+
     MOCK_DATABASE_ERROR: {
         code: "MOCK_DATABASE_ERROR",
         message: "Ocurrió un error al guardar los datos de prueba.",

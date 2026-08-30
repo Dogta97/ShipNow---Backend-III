@@ -12,24 +12,49 @@ class UserRepository {
     }
 
     async create(userData) {
-        return await User.create(userData);
+        return await User.create(
+            userData
+        );
     }
 
-    async update(id, userData) {
+    async update(
+        id,
+        userData
+    ) {
         return await User.findByIdAndUpdate(
             id,
             userData,
             {
-                new: true,
+                returnDocument: "after",
                 runValidators: true,
             }
         );
     }
 
     async delete(id) {
-        return await User.findByIdAndDelete(id);
+        return await User.findByIdAndDelete(
+            id
+        );
     }
 
+    async addDocument(
+        id,
+        documentMetadata
+    ) {
+        return await User.findByIdAndUpdate(
+            id,
+            {
+                $push: {
+                    documents:
+                        documentMetadata,
+                },
+            },
+            {
+                returnDocument: "after",
+                runValidators: true,
+            }
+        );
+    }
 }
 
 export default new UserRepository();
