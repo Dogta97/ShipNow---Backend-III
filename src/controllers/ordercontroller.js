@@ -2,35 +2,61 @@ import orderService from "../services/orderservice.js";
 
 class OrderController {
 
-    async getAllOrders(req, res, next) {
+    async getAllOrders(
+        req,
+        res,
+        next
+    ) {
+
         try {
 
-            const orders =
-                await orderService.getAllOrders();
+            const result =
+                await orderService.getAllOrders(
+                    req.query
+                );
 
-            res.status(200).json(orders);
+            res
+                .status(200)
+                .json(result);
 
         } catch (error) {
+
             next(error);
         }
     }
 
-    async getOrderById(req, res, next) {
+    async getOrderById(
+        req,
+        res,
+        next
+    ) {
+
         try {
 
-            const { id } = req.params;
+            const { id } =
+                req.params;
 
             const order =
-                await orderService.getOrderById(id);
+                await orderService.getOrderById(
+                    id
+                );
 
-            res.status(200).json(order);
+            res
+                .status(200)
+                .json(order);
 
         } catch (error) {
+
             next(error);
         }
     }
 
-    async createOrder(req, res, next) {
+    async createOrder(
+        req,
+        res,
+        next
+    ) {
+
         try {
 
             const order =
@@ -38,18 +64,29 @@ class OrderController {
                     req.body
                 );
 
-            res.status(201).json(order);
+            res
+                .status(201)
+                .json(order);
 
         } catch (error) {
+
             next(error);
         }
     }
 
-    async updateOrderStatus(req, res, next) {
+    async updateOrderStatus(
+        req,
+        res,
+        next
+    ) {
+
         try {
 
-            const { id } = req.params;
-            const { status } = req.body;
+            const { id } =
+                req.params;
+
+            const { status } =
+                req.body;
 
             const order =
                 await orderService.updateOrderStatus(
@@ -57,9 +94,12 @@ class OrderController {
                     status
                 );
 
-            res.status(200).json(order);
+            res
+                .status(200)
+                .json(order);
 
         } catch (error) {
+
             next(error);
         }
     }

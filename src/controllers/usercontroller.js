@@ -2,64 +2,88 @@ import userService from "../services/userservice.js";
 
 class UserController {
 
-    async getAllUsers(req, res, next) {
+    async getAllUsers(
+        req,
+        res,
+        next
+    ) {
 
         try {
 
-            const users =
-                await userService.getAllUsers();
+            const result =
+                await userService.getAllUsers(
+                    req.query
+                );
 
-            res.status(200).json(users);
+            res
+                .status(200)
+                .json(result);
 
         } catch (error) {
 
             next(error);
-
         }
-
     }
 
-    async getUserById(req, res, next) {
+    async getUserById(
+        req,
+        res,
+        next
+    ) {
 
         try {
 
-            const { id } = req.params;
+            const { id } =
+                req.params;
 
             const user =
-                await userService.getUserById(id);
+                await userService.getUserById(
+                    id
+                );
 
-            res.status(200).json(user);
+            res
+                .status(200)
+                .json(user);
 
         } catch (error) {
 
             next(error);
-
         }
-
     }
 
-    async createUser(req, res, next) {
+    async createUser(
+        req,
+        res,
+        next
+    ) {
 
         try {
 
             const user =
-                await userService.createUser(req.body);
+                await userService.createUser(
+                    req.body
+                );
 
-            res.status(201).json(user);
+            res
+                .status(201)
+                .json(user);
 
         } catch (error) {
 
             next(error);
-
         }
-
     }
 
-    async updateUser(req, res, next) {
+    async updateUser(
+        req,
+        res,
+        next
+    ) {
 
         try {
 
-            const { id } = req.params;
+            const { id } =
+                req.params;
 
             const user =
                 await userService.updateUser(
@@ -67,36 +91,43 @@ class UserController {
                     req.body
                 );
 
-            res.status(200).json(user);
+            res
+                .status(200)
+                .json(user);
 
         } catch (error) {
 
             next(error);
-
         }
-
     }
 
-    async deleteUser(req, res, next) {
+    async deleteUser(
+        req,
+        res,
+        next
+    ) {
 
         try {
 
-            const { id } = req.params;
+            const { id } =
+                req.params;
 
-            await userService.deleteUser(id);
+            await userService.deleteUser(
+                id
+            );
 
-            res.status(200).json({
-                message: "Usuario eliminado correctamente.",
-            });
+            res
+                .status(200)
+                .json({
+                    message:
+                        "Usuario eliminado correctamente.",
+                });
 
         } catch (error) {
 
             next(error);
-
         }
-
     }
-
 }
 
 export default new UserController();

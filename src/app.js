@@ -12,44 +12,103 @@ import uploadRoutes from "./routes/upload.routes.js";
 
 import swaggerSpec from "./config/swagger.config.js";
 
+import config from "./config/env.config.js";
+
 import AppError from "./errors/AppError.js";
-import { ERROR_TYPES } from "./errors/errorDictionary.js";
+
+import {
+    ERROR_TYPES,
+} from "./errors/errorDictionary.js";
+
 import errorMiddleware from "./middlewares/error.middleware.js";
 
 const app = express();
 
-app.use(express.json());
+app.use(
+    express.json({
+        limit: "1mb",
+    })
+);
 
 app.use(
     "/api/docs",
     swaggerUi.serve,
-    swaggerUi.setup(swaggerSpec)
+    swaggerUi.setup(
+        swaggerSpec
+    )
 );
 
-app.get("/", (req, res) => {
-    res.json({
-        message: "🚚 Bienvenido a ShipNow API",
-    });
-});
+app.get(
+    "/",
+    (req, res) => {
 
-app.use("/api/users", userRoutes);
-app.use("/api/products", productRoutes);
-app.use("/api/orders", orderRoutes);
-app.use("/api/shipments", shipmentRoutes);
-app.use("/api/health", healthRoutes);
-app.use("/api/mocks", mockRoutes);
-app.use("/api/logger", loggerRoutes);
-app.use("/api/uploads", uploadRoutes);
+        res.json({
 
+            message:
+                "🚚 Bienvenido a ShipNow API",
+        });
+    }
+);
 
-app.use((req, res, next) => {
-    next(
-        new AppError(
-            ERROR_TYPES.ROUTE_NOT_FOUND
-        )
+app.use(
+    "/api/users",
+    userRoutes
+);
+
+app.use(
+    "/api/products",
+    productRoutes
+);
+
+app.use(
+    "/api/orders",
+    orderRoutes
+);
+
+app.use(
+    "/api/shipments",
+    shipmentRoutes
+);
+
+app.use(
+    "/api/health",
+    healthRoutes
+);
+
+app.use(
+    "/api/uploads",
+    uploadRoutes
+);
+
+if (
+    config.nodeEnv !==
+    "production"
+) {
+
+    app.use(
+        "/api/mocks",
+        mockRoutes
     );
-});
 
-app.use(errorMiddleware);
+    app.use(
+        "/api/logger",
+        loggerRoutes
+    );
+}
+
+app.use(
+    (req, res, next) => {
+
+        next(
+            new AppError(
+                ERROR_TYPES.ROUTE_NOT_FOUND
+            )
+        );
+    }
+);
+
+app.use(
+    errorMiddleware
+);
 
 export default app;

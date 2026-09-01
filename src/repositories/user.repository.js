@@ -2,16 +2,48 @@ import User from "../models/user.js";
 
 class UserRepository {
 
-    async getAll() {
-        return await User.find()
-            .sort({ createdAt: -1 });
+    async getAll({
+        page = 1,
+        limit = 10,
+        role,
+    }) {
+
+        const filter = {};
+
+        if (role) {
+            filter.role = role;
+        }
+
+        const skip =
+            (page - 1) * limit;
+
+        const [
+            users,
+            totalDocs,
+        ] = await Promise.all([
+
+            User.find(filter)
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit),
+
+            User.countDocuments(filter),
+
+        ]);
+
+        return {
+            users,
+            totalDocs,
+        };
     }
 
     async getById(id) {
+
         return await User.findById(id);
     }
 
     async create(userData) {
+
         return await User.create(
             userData
         );
@@ -21,6 +53,7 @@ class UserRepository {
         id,
         userData
     ) {
+
         return await User.findByIdAndUpdate(
             id,
             userData,
@@ -32,6 +65,7 @@ class UserRepository {
     }
 
     async delete(id) {
+
         return await User.findByIdAndDelete(
             id
         );
@@ -41,6 +75,7 @@ class UserRepository {
         id,
         documentMetadata
     ) {
+
         return await User.findByIdAndUpdate(
             id,
             {
