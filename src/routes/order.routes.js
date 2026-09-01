@@ -8,21 +8,76 @@ const router = Router();
  * @swagger
  * /api/orders:
  *   get:
- *     summary: Obtener todos los pedidos
- *     description: Devuelve la lista completa de pedidos registrados en ShipNow.
+ *     summary: Obtener pedidos
+ *     description: Obtiene pedidos con paginación y filtros opcionales por estado y prioridad.
  *     tags:
  *       - Orders
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 10
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum:
+ *             - PENDING
+ *             - CONFIRMED
+ *             - PREPARING
+ *             - SHIPPED
+ *             - DELIVERED
+ *             - CANCELLED
+ *       - in: query
+ *         name: priority
+ *         schema:
+ *           type: string
+ *           enum:
+ *             - LOW
+ *             - NORMAL
+ *             - HIGH
+ *             - URGENT
  *     responses:
  *       200:
- *         description: Lista de pedidos obtenida correctamente
+ *         description: Pedidos obtenidos correctamente.
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Order'
- *       500:
- *         description: Error interno del servidor
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 payload:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Order'
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     page:
+ *                       type: integer
+ *                     limit:
+ *                       type: integer
+ *                     totalDocs:
+ *                       type: integer
+ *                     totalPages:
+ *                       type: integer
+ *                     hasNextPage:
+ *                       type: boolean
+ *                     hasPrevPage:
+ *                       type: boolean
+ *       400:
+ *         description: Parámetros inválidos.
  *         content:
  *           application/json:
  *             schema:
@@ -38,7 +93,6 @@ router.get(
  * /api/orders/{id}:
  *   get:
  *     summary: Obtener un pedido por ID
- *     description: Devuelve un pedido específico según su identificador.
  *     tags:
  *       - Orders
  *     parameters:
@@ -47,26 +101,15 @@ router.get(
  *         required: true
  *         schema:
  *           type: string
- *         description: ID del pedido
  *     responses:
  *       200:
- *         description: Pedido encontrado correctamente
+ *         description: Pedido encontrado correctamente.
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Order'
- *       400:
- *         description: ID inválido
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
  *       404:
- *         description: Pedido no encontrado
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *         description: Pedido no encontrado.
  */
 router.get(
     "/:id",
@@ -78,7 +121,6 @@ router.get(
  * /api/orders:
  *   post:
  *     summary: Crear un nuevo pedido
- *     description: Crea un pedido asociado a un usuario y uno o más productos.
  *     tags:
  *       - Orders
  *     requestBody:
@@ -93,7 +135,6 @@ router.get(
  *             properties:
  *               user:
  *                 type: string
- *                 description: ID del usuario asociado al pedido
  *               products:
  *                 type: array
  *                 minItems: 1
@@ -105,11 +146,9 @@ router.get(
  *                   properties:
  *                     product:
  *                       type: string
- *                       description: ID del producto
  *                     quantity:
  *                       type: integer
  *                       minimum: 1
- *                       description: Cantidad solicitada
  *               priority:
  *                 type: string
  *                 enum:
@@ -118,31 +157,15 @@ router.get(
  *                   - HIGH
  *                   - URGENT
  *                 default: NORMAL
- *           example:
- *             user: "66a123456789abcdef123456"
- *             products:
- *               - product: "66b123456789abcdef123456"
- *                 quantity: 2
- *             priority: NORMAL
  *     responses:
  *       201:
- *         description: Pedido creado correctamente
+ *         description: Pedido creado correctamente.
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Order'
  *       400:
- *         description: Datos inválidos
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
- *       404:
- *         description: Usuario o producto no encontrado
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *         description: Datos inválidos.
  */
 router.post(
     "/",
@@ -153,8 +176,7 @@ router.post(
  * @swagger
  * /api/orders/{id}/status:
  *   put:
- *     summary: Actualizar el estado de un pedido
- *     description: Modifica el estado actual de un pedido existente.
+ *     summary: Actualizar estado de un pedido
  *     tags:
  *       - Orders
  *     parameters:
@@ -163,7 +185,6 @@ router.post(
  *         required: true
  *         schema:
  *           type: string
- *         description: ID del pedido
  *     requestBody:
  *       required: true
  *       content:
@@ -182,27 +203,11 @@ router.post(
  *                   - SHIPPED
  *                   - DELIVERED
  *                   - CANCELLED
- *           example:
- *             status: CONFIRMED
  *     responses:
  *       200:
- *         description: Estado actualizado correctamente
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Order'
- *       400:
- *         description: Estado o ID inválido
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *         description: Estado actualizado correctamente.
  *       404:
- *         description: Pedido no encontrado
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *         description: Pedido no encontrado.
  */
 router.put(
     "/:id/status",

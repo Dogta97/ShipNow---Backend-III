@@ -1,23 +1,96 @@
 import productRepository from "../repositories/product.repository.js";
+
 import { PRODUCT_STATUS } from "../constants/index.js";
+
 import AppError from "../errors/AppError.js";
+
 import { ERROR_TYPES } from "../errors/errorDictionary.js";
 
 class ProductService {
 
-    async getAllProducts() {
+    async getAllProducts(
+        query = {}
+    ) {
 
-        const products =
-            await productRepository.getAll();
+        const page =
+            Number(query.page) || 1;
 
-        return products;
+        const limit =
+            Number(query.limit) || 10;
 
+        const { status } = query;
+
+        if (
+            !Number.isInteger(page) ||
+            page <= 0
+        ) {
+            throw new AppError(
+                ERROR_TYPES.INVALID_DATA
+            );
+        }
+
+        if (
+            !Number.isInteger(limit) ||
+            limit <= 0 ||
+            limit > 100
+        ) {
+            throw new AppError(
+                ERROR_TYPES.INVALID_DATA
+            );
+        }
+
+        if (
+            status &&
+            !Object.values(
+                PRODUCT_STATUS
+            ).includes(status)
+        ) {
+            throw new AppError(
+                ERROR_TYPES.INVALID_DATA
+            );
+        }
+
+        const {
+            products,
+            totalDocs,
+        } =
+            await productRepository.getAll({
+                page,
+                limit,
+                status,
+            });
+
+        const totalPages =
+            Math.ceil(
+                totalDocs / limit
+            );
+
+        return {
+            status: "success",
+
+            payload: products,
+
+            pagination: {
+                page,
+                limit,
+                totalDocs,
+                totalPages,
+
+                hasNextPage:
+                    page < totalPages,
+
+                hasPrevPage:
+                    page > 1,
+            },
+        };
     }
 
     async getProductById(id) {
 
         const product =
-            await productRepository.getById(id);
+            await productRepository.getById(
+                id
+            );
 
         if (!product) {
             throw new AppError(
@@ -26,7 +99,6 @@ class ProductService {
         }
 
         return product;
-
     }
 
     async createProduct(productData) {
@@ -45,7 +117,8 @@ class ProductService {
         }
 
         if (
-            typeof productData.price !== "number" ||
+            typeof productData.price !==
+                "number" ||
             productData.price < 0
         ) {
             throw new AppError(
@@ -54,7 +127,9 @@ class ProductService {
         }
 
         if (
-            !Number.isInteger(productData.stock) ||
+            !Number.isInteger(
+                productData.stock
+            ) ||
             productData.stock < 0
         ) {
             throw new AppError(
@@ -71,15 +146,12 @@ class ProductService {
 
             productData.status =
                 PRODUCT_STATUS.AVAILABLE;
-
         }
 
         return await productRepository.create(
             productData
         );
-
     }
-
 }
 
 export default new ProductService();

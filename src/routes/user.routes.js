@@ -1,4 +1,5 @@
 import { Router } from "express";
+
 import userController from "../controllers/usercontroller.js";
 
 const router = Router();
@@ -7,19 +8,77 @@ const router = Router();
  * @swagger
  * /api/users:
  *   get:
- *     summary: Obtener todos los usuarios
- *     description: Devuelve la lista completa de usuarios registrados en ShipNow.
+ *     summary: Obtener usuarios
+ *     description: Obtiene usuarios de ShipNow con paginación y filtro opcional por rol.
  *     tags:
  *       - Users
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Número de página.
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 10
+ *         description: Cantidad máxima de usuarios por página.
+ *       - in: query
+ *         name: role
+ *         schema:
+ *           type: string
+ *           enum:
+ *             - ADMIN
+ *             - USER
+ *             - DELIVERER
+ *         description: Filtrar usuarios por rol.
  *     responses:
  *       200:
- *         description: Lista de usuarios obtenida correctamente.
+ *         description: Usuarios obtenidos correctamente.
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/User'
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 payload:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/User'
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     page:
+ *                       type: integer
+ *                       example: 1
+ *                     limit:
+ *                       type: integer
+ *                       example: 10
+ *                     totalDocs:
+ *                       type: integer
+ *                       example: 25
+ *                     totalPages:
+ *                       type: integer
+ *                       example: 3
+ *                     hasNextPage:
+ *                       type: boolean
+ *                       example: true
+ *                     hasPrevPage:
+ *                       type: boolean
+ *                       example: false
+ *       400:
+ *         description: Parámetros de paginación o filtro inválidos.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  *       500:
  *         description: Error interno del servidor.
  *         content:
@@ -32,23 +91,21 @@ router.get(
     userController.getAllUsers
 );
 
-
 /**
  * @swagger
  * /api/users/{id}:
  *   get:
  *     summary: Obtener un usuario por ID
- *     description: Busca y devuelve un usuario específico utilizando su identificador de MongoDB.
+ *     description: Busca un usuario utilizando su identificador de MongoDB.
  *     tags:
  *       - Users
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: ID del usuario.
  *         schema:
  *           type: string
- *         example: 66d0a132dc78230f1b421001
+ *         description: ID del usuario.
  *     responses:
  *       200:
  *         description: Usuario encontrado correctamente.
@@ -68,18 +125,11 @@ router.get(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
- *       500:
- *         description: Error interno del servidor.
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.get(
     "/:id",
     userController.getUserById
 );
-
 
 /**
  * @swagger
@@ -121,13 +171,7 @@ router.get(
  *             schema:
  *               $ref: '#/components/schemas/User'
  *       400:
- *         description: Datos de usuario inválidos.
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
- *       500:
- *         description: Error interno del servidor.
+ *         description: Datos inválidos.
  *         content:
  *           application/json:
  *             schema:
@@ -138,23 +182,19 @@ router.post(
     userController.createUser
 );
 
-
 /**
  * @swagger
  * /api/users/{id}:
  *   put:
  *     summary: Actualizar un usuario
- *     description: Actualiza los datos de un usuario existente.
  *     tags:
  *       - Users
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: ID del usuario.
  *         schema:
  *           type: string
- *         example: 66d0a132dc78230f1b421001
  *     requestBody:
  *       required: true
  *       content:
@@ -164,18 +204,15 @@ router.post(
  *             properties:
  *               name:
  *                 type: string
- *                 example: Juan Pérez Actualizado
  *               email:
  *                 type: string
  *                 format: email
- *                 example: juan.actualizado@example.com
  *               role:
  *                 type: string
  *                 enum:
  *                   - ADMIN
  *                   - USER
  *                   - DELIVERER
- *                 example: DELIVERER
  *     responses:
  *       200:
  *         description: Usuario actualizado correctamente.
@@ -183,76 +220,32 @@ router.post(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/User'
- *       400:
- *         description: ID o datos inválidos.
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
  *       404:
  *         description: Usuario no encontrado.
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
- *       500:
- *         description: Error interno del servidor.
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.put(
     "/:id",
     userController.updateUser
 );
 
-
 /**
  * @swagger
  * /api/users/{id}:
  *   delete:
  *     summary: Eliminar un usuario
- *     description: Elimina un usuario existente utilizando su ID.
  *     tags:
  *       - Users
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: ID del usuario.
  *         schema:
  *           type: string
- *         example: 66d0a132dc78230f1b421001
  *     responses:
  *       200:
  *         description: Usuario eliminado correctamente.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: Usuario eliminado correctamente.
- *       400:
- *         description: ID inválido.
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
  *       404:
  *         description: Usuario no encontrado.
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
- *       500:
- *         description: Error interno del servidor.
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.delete(
     "/:id",

@@ -23,7 +23,6 @@ class UploadService {
         file,
         documentType
     ) {
-
         if (!file) {
             throw new AppError(
                 ERROR_TYPES.FILE_REQUIRED
@@ -80,7 +79,7 @@ class UploadService {
 
         } catch (error) {
 
-            this.deleteFileIfExists(
+            await this.deleteFileIfExists(
                 file.path
             );
 
@@ -105,7 +104,6 @@ class UploadService {
         orderId,
         file
     ) {
-
         if (!file) {
             throw new AppError(
                 ERROR_TYPES.FILE_REQUIRED
@@ -151,7 +149,7 @@ class UploadService {
 
         } catch (error) {
 
-            this.deleteFileIfExists(
+            await this.deleteFileIfExists(
                 file.path
             );
 
@@ -176,7 +174,6 @@ class UploadService {
         file,
         documentType
     ) {
-
         return {
             originalName:
                 file.originalname,
@@ -204,24 +201,26 @@ class UploadService {
         };
     }
 
-    deleteFileIfExists(
+    async deleteFileIfExists(
         filePath
     ) {
+        if (!filePath) {
+            return;
+        }
 
         try {
 
-            if (
-                filePath &&
-                fs.existsSync(filePath)
-            ) {
-                fs.unlinkSync(filePath);
-            }
+            await fs.promises.unlink(
+                filePath
+            );
 
         } catch (error) {
 
-            logger.error(
-                `No se pudo eliminar el archivo ${filePath}: ${error.message}`
-            );
+            if (error.code !== "ENOENT") {
+                logger.error(
+                    `No se pudo eliminar el archivo ${filePath}: ${error.message}`
+                );
+            }
         }
     }
 }
