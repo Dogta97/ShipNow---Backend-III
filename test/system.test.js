@@ -1,17 +1,66 @@
 import { expect } from "chai";
+
 import request from "supertest";
 
 import app from "../src/app.js";
+
 import User from "../src/models/user.js";
 
 describe("System endpoints", function () {
 
     beforeEach(async function () {
+
         await User.deleteMany({});
+
     });
 
     afterEach(async function () {
+
         await User.deleteMany({});
+
+    });
+
+    describe("Health Check", function () {
+
+        it("debería informar correctamente el estado de la API", async function () {
+
+            const response =
+                await request(app)
+                    .get("/api/health");
+
+            expect(response.status)
+                .to.equal(200);
+
+            expect(response.body)
+                .to.have.property(
+                    "status",
+                    "ok"
+                );
+
+            expect(response.body)
+                .to.have.property(
+                    "environment",
+                    "test"
+                );
+
+            expect(response.body)
+                .to.have.property(
+                    "uptime"
+                );
+
+            expect(response.body.uptime)
+                .to.be.a("number");
+
+            expect(response.body)
+                .to.have.property(
+                    "timestamp"
+                );
+
+            expect(response.body.timestamp)
+                .to.be.a("string");
+
+        });
+
     });
 
     describe("Mocks API", function () {
@@ -34,16 +83,21 @@ describe("System endpoints", function () {
             );
 
             expect(response.body).to.have.property("payload");
+
             expect(response.body.payload).to.be.an("array");
+
             expect(response.body.payload).to.have.lengthOf(3);
 
             expect(response.body.payload[0]).to.have.property("name");
+
             expect(response.body.payload[0]).to.have.property("email");
+
             expect(response.body.payload[0]).to.have.property("role");
 
             const usersInDatabase = await User.find();
 
             expect(usersInDatabase).to.have.lengthOf(0);
+
         });
 
         it("debería insertar usuarios mock en la base de testing", async function () {
@@ -64,12 +118,15 @@ describe("System endpoints", function () {
             );
 
             expect(response.body).to.have.property("payload");
+
             expect(response.body.payload).to.be.an("array");
+
             expect(response.body.payload).to.have.lengthOf(2);
 
             const usersInDatabase = await User.find();
 
             expect(usersInDatabase).to.have.lengthOf(2);
+
         });
 
         it("debería devolver 400 si la cantidad mock es inválida", async function () {
@@ -93,6 +150,7 @@ describe("System endpoints", function () {
                 "message",
                 "La cantidad debe ser un número entero mayor a 0."
             );
+
         });
 
         it("debería devolver 400 si se supera el máximo permitido", async function () {
@@ -116,6 +174,7 @@ describe("System endpoints", function () {
                 "message",
                 "La cantidad máxima permitida es 100."
             );
+
         });
 
     });
@@ -138,6 +197,7 @@ describe("System endpoints", function () {
                 "message",
                 "Logs de prueba generados correctamente."
             );
+
         });
 
     });
@@ -156,6 +216,7 @@ describe("System endpoints", function () {
 
             expect(response.text)
                 .to.include("Swagger UI");
+
         });
 
     });
@@ -183,6 +244,7 @@ describe("System endpoints", function () {
                 "message",
                 "La ruta solicitada no existe."
             );
+
         });
 
     });

@@ -1,5 +1,6 @@
+import fs from "fs";
+import path from "path";
 import winston from "winston";
-import "winston-daily-rotate-file";
 
 import config from "./env.config.js";
 
@@ -10,17 +11,11 @@ const {
 } = winston.format;
 
 const levels = {
-
     fatal: 0,
-
     error: 1,
-
     warning: 2,
-
     info: 3,
-
     http: 4,
-
     debug: 5,
 };
 
@@ -32,60 +27,70 @@ if (
         config.logLevel
     )
 ) {
-
     throw new Error(
         `LOG_LEVEL debe ser uno de los siguientes valores: ${validLogLevels.join(", ")}.`
     );
 }
 
-const logFormat = combine(
+const logsDirectory =
+    path.join(
+        process.cwd(),
+        "logs"
+    );
 
-    timestamp({
-        format:
-            "YYYY-MM-DD HH:mm:ss",
-    }),
-
-    printf(
-        ({
-            timestamp,
-            level,
-            message,
-        }) => {
-
-            return `${timestamp} [${level}] ${message}`;
-        }
+if (
+    !fs.existsSync(
+        logsDirectory
     )
-);
+) {
+    fs.mkdirSync(
+        logsDirectory,
+        {
+            recursive: true,
+        }
+    );
+}
 
-const errorTransport =
-    new winston.transports
-        .DailyRotateFile({
-
-            filename:
-                "logs/error-%DATE%.log",
-
-            datePattern:
-                "YYYY-MM-DD",
-
-            zippedArchive:
-                true,
-
-            maxSize:
-                "10m",
-
-            maxFiles:
-                "14d",
-
-            level:
-                "error",
-
+const logFormat =
+    combine(
+        timestamp({
             format:
-                logFormat,
-        });
+                "YYYY-MM-DD HH:mm:ss",
+        }),
+
+        printf(
+            ({
+                timestamp,
+                level,
+                message,
+            }) => {
+                return `${timestamp} [${level}] ${message}`;
+            }
+        )
+    );
 
 const transports = [
 
-    new winston.transports.Console({
+    new winston.transports.File({
+        filename:
+            path.join(
+                logsDirectory,
+                "error.log"
+            ),
+
+        level:
+            "error",
+
+        format:
+            logFormat,
+    }),
+
+    new winston.transports.File({
+        filename:
+            path.join(
+                logsDirectory,
+                "combined.log"
+            ),
 
         level:
             config.logLevel,
@@ -93,15 +98,26 @@ const transports = [
         format:
             logFormat,
     }),
-
-    errorTransport,
 ];
+
+if (
+    config.nodeEnv ===
+    "development"
+) {
+    transports.push(
+        new winston.transports.Console({
+            level:
+                config.logLevel,
+
+            format:
+                logFormat,
+        })
+    );
+}
 
 const logger =
     winston.createLogger({
-
         levels,
-
         transports,
     });
 

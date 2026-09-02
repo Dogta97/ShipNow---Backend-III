@@ -1,4 +1,6 @@
-import { Router } from "express";
+import {
+    Router,
+} from "express";
 
 import uploadController from "../controllers/uploadcontroller.js";
 
@@ -8,7 +10,6 @@ import {
 } from "../config/multer.config.js";
 
 const router = Router();
-
 
 /**
  * @swagger
@@ -125,10 +126,11 @@ const router = Router();
  */
 router.post(
     "/users/:id/documents",
-    uploadUserDocument.single("file"),
+    uploadUserDocument.single(
+        "file"
+    ),
     uploadController.uploadUserDocument
 );
-
 
 /**
  * @swagger
@@ -185,6 +187,87 @@ router.post(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
+ *       404:
+ *         description: El pedido no existe.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               status: error
+ *               error: ORDER_NOT_FOUND
+ *               message: El pedido no fue encontrado.
+ *       500:
+ *         description: Error interno durante la carga del comprobante.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+router.post(
+    "/orders/:id/receipt",
+    uploadReceipt.single(
+        "file"
+    ),
+    uploadController.uploadOrderReceipt
+);
+
+/**
+ * @swagger
+ * /api/uploads/shipments/{id}/receipt:
+ *   post:
+ *     summary: Cargar un comprobante para un envío
+ *     description: >
+ *       Permite cargar un comprobante PDF, JPG, JPEG o PNG y asociarlo
+ *       a un envío existente. El archivo se almacena físicamente en
+ *       uploads/receipts y MongoDB conserva únicamente su metadata.
+ *       El tipo de documento se registra automáticamente como RECEIPT.
+ *       El tamaño máximo permitido es de 5 MB.
+ *     tags:
+ *       - Uploads
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID de MongoDB del envío.
+ *         example: 66d0a132dc78230f1b421030
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - file
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 description: Comprobante PDF, JPG, JPEG o PNG. Máximo 5 MB.
+ *     responses:
+ *       200:
+ *         description: Comprobante del envío cargado correctamente.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 message:
+ *                   type: string
+ *                   example: Comprobante del envío cargado correctamente.
+ *                 payload:
+ *                   $ref: '#/components/schemas/Shipment'
+ *       400:
+ *         description: Error de validación del archivo.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  *             examples:
  *               fileRequired:
  *                 summary: Archivo no enviado
@@ -211,15 +294,15 @@ router.post(
  *                   error: INVALID_FILE_FIELD
  *                   message: El campo utilizado para enviar el archivo no es válido.
  *       404:
- *         description: El pedido no existe.
+ *         description: El envío no existe.
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  *             example:
  *               status: error
- *               error: ORDER_NOT_FOUND
- *               message: El pedido no fue encontrado.
+ *               error: SHIPMENT_NOT_FOUND
+ *               message: El envío no fue encontrado.
  *       500:
  *         description: Error interno durante la carga del comprobante.
  *         content:
@@ -228,10 +311,11 @@ router.post(
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.post(
-    "/orders/:id/receipt",
-    uploadReceipt.single("file"),
-    uploadController.uploadOrderReceipt
+    "/shipments/:id/receipt",
+    uploadReceipt.single(
+        "file"
+    ),
+    uploadController.uploadShipmentReceipt
 );
-
 
 export default router;

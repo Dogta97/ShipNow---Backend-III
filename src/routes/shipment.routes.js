@@ -79,6 +79,41 @@ router.get(
 
 /**
  * @swagger
+ * /api/shipments/tracking/{trackingNumber}:
+ *   get:
+ *     summary: Buscar un envío por número de seguimiento
+ *     description: Obtiene un envío utilizando su número de tracking.
+ *     tags:
+ *       - Deliveries
+ *     parameters:
+ *       - in: path
+ *         name: trackingNumber
+ *         required: true
+ *         description: Número de seguimiento del envío.
+ *         schema:
+ *           type: string
+ *         example: SHIP-2026-0001
+ *     responses:
+ *       200:
+ *         description: Envío encontrado correctamente.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Delivery'
+ *       404:
+ *         description: Envío no encontrado.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+router.get(
+    "/tracking/:trackingNumber",
+    shipmentController.getShipmentByTrackingNumber
+);
+
+/**
+ * @swagger
  * /api/shipments/{id}:
  *   get:
  *     summary: Obtener un envío por ID
@@ -99,6 +134,10 @@ router.get(
  *               $ref: '#/components/schemas/Delivery'
  *       404:
  *         description: Envío no encontrado.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.get(
     "/:id",
@@ -120,17 +159,21 @@ router.get(
  *             type: object
  *             required:
  *               - trackingNumber
+ *               - order
  *               - origin
  *               - destination
+ *               - weight
  *             properties:
  *               trackingNumber:
  *                 type: string
  *                 example: SHIP-2026-0001
  *               order:
  *                 type: string
+ *                 description: ID del pedido asociado.
  *               deliverer:
  *                 type: string
  *                 nullable: true
+ *                 description: ID del repartidor asociado.
  *               origin:
  *                 type: string
  *                 example: Buenos Aires
@@ -151,8 +194,16 @@ router.get(
  *     responses:
  *       201:
  *         description: Envío creado correctamente.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Delivery'
  *       400:
  *         description: Datos inválidos.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.post(
     "/",
@@ -185,12 +236,14 @@ router.post(
  *                 type: string
  *               deliverer:
  *                 type: string
+ *                 nullable: true
  *               origin:
  *                 type: string
  *               destination:
  *                 type: string
  *               weight:
  *                 type: number
+ *                 minimum: 0
  *               status:
  *                 type: string
  *                 enum:
@@ -201,8 +254,16 @@ router.post(
  *     responses:
  *       200:
  *         description: Envío actualizado correctamente.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Delivery'
  *       404:
  *         description: Envío no encontrado.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.put(
     "/:id",
@@ -225,8 +286,20 @@ router.put(
  *     responses:
  *       200:
  *         description: Envío eliminado correctamente.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Envío eliminado correctamente.
  *       404:
  *         description: Envío no encontrado.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.delete(
     "/:id",

@@ -22,7 +22,38 @@ class ShipmentController {
         } catch (error) {
 
             next(error);
+
         }
+
+    }
+
+    async getShipmentByTrackingNumber(
+        req,
+        res,
+        next
+    ) {
+
+        try {
+
+            const {
+                trackingNumber,
+            } = req.params;
+
+            const shipment =
+                await shipmentService.getShipmentByTrackingNumber(
+                    trackingNumber
+                );
+
+            res
+                .status(200)
+                .json(shipment);
+
+        } catch (error) {
+
+            next(error);
+
+        }
+
     }
 
     async getShipmentById(
@@ -48,7 +79,9 @@ class ShipmentController {
         } catch (error) {
 
             next(error);
+
         }
+
     }
 
     async createShipment(
@@ -71,7 +104,9 @@ class ShipmentController {
         } catch (error) {
 
             next(error);
+
         }
+
     }
 
     async updateShipment(
@@ -98,7 +133,9 @@ class ShipmentController {
         } catch (error) {
 
             next(error);
+
         }
+
     }
 
     async deleteShipment(
@@ -126,8 +163,11 @@ class ShipmentController {
         } catch (error) {
 
             next(error);
+
         }
+
     }
+
 }
 
 export default new ShipmentController();

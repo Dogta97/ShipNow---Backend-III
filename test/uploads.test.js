@@ -7,6 +7,7 @@ import app from "../src/app.js";
 import User from "../src/models/user.js";
 import Order from "../src/models/order.js";
 import Product from "../src/models/product.js";
+import Shipment from "../src/models/shipment.js";
 
 const uploadsUsersPath = path.resolve(
     "uploads",
@@ -19,21 +20,34 @@ const uploadsReceiptsPath = path.resolve(
 );
 
 const clearDirectory = (directory) => {
+
     if (!fs.existsSync(directory)) {
-        fs.mkdirSync(directory, {
-            recursive: true,
-        });
+
+        fs.mkdirSync(
+            directory,
+            {
+                recursive: true,
+            }
+        );
 
         return;
+
     }
 
-    const files = fs.readdirSync(directory);
+    const files =
+        fs.readdirSync(directory);
 
     for (const file of files) {
+
         fs.unlinkSync(
-            path.join(directory, file)
+            path.join(
+                directory,
+                file
+            )
         );
+
     }
+
 };
 
 describe("Uploads API", function () {
@@ -41,6 +55,7 @@ describe("Uploads API", function () {
     let user;
     let product;
     let order;
+    let shipment;
 
     before(async function () {
 
@@ -52,43 +67,88 @@ describe("Uploads API", function () {
             uploadsReceiptsPath
         );
 
-        await User.deleteMany({});
-        await Product.deleteMany({});
+        await Shipment.deleteMany({});
         await Order.deleteMany({});
+        await Product.deleteMany({});
+        await User.deleteMany({});
 
         user = await User.create({
-            name: "Upload Test User",
+            name:
+                "Upload Test User",
+
             email:
                 "uploadtest@shipnow.test",
-            role: "USER",
+
+            role:
+                "USER",
         });
 
         product =
             await Product.create({
-                name: "Producto Upload",
+                name:
+                    "Producto Upload",
+
                 description:
                     "Producto utilizado para testing de uploads",
-                price: 1500,
-                stock: 20,
-                status: "AVAILABLE",
+
+                price:
+                    1500,
+
+                stock:
+                    20,
+
+                status:
+                    "AVAILABLE",
             });
 
-        order = await Order.create({
-            user: user._id,
-            products: [
-                {
-                    product:
-                        product._id,
-                    quantity: 1,
-                },
-            ],
-            status: "PENDING",
-            priority: "NORMAL",
-        });
+        order =
+            await Order.create({
+                user:
+                    user._id,
+
+                products: [
+                    {
+                        product:
+                            product._id,
+
+                        quantity:
+                            1,
+                    },
+                ],
+
+                status:
+                    "PENDING",
+
+                priority:
+                    "NORMAL",
+            });
+
+        shipment =
+            await Shipment.create({
+                trackingNumber:
+                    "SHIP-UPLOAD-001",
+
+                order:
+                    order._id,
+
+                origin:
+                    "Buenos Aires",
+
+                destination:
+                    "La Plata",
+
+                weight:
+                    3.5,
+
+                status:
+                    "PENDING",
+            });
+
     });
 
     after(async function () {
 
+        await Shipment.deleteMany({});
         await Order.deleteMany({});
         await Product.deleteMany({});
         await User.deleteMany({});
@@ -100,6 +160,7 @@ describe("Uploads API", function () {
         clearDirectory(
             uploadsReceiptsPath
         );
+
     });
 
     it(
@@ -123,6 +184,7 @@ describe("Uploads API", function () {
                         {
                             filename:
                                 "dni-test.png",
+
                             contentType:
                                 "image/png",
                         }
@@ -134,7 +196,9 @@ describe("Uploads API", function () {
 
             expect(
                 response.body.status
-            ).to.equal("success");
+            ).to.equal(
+                "success"
+            );
 
             expect(
                 response.body.message
@@ -144,7 +208,9 @@ describe("Uploads API", function () {
 
             expect(
                 response.body.payload.documents
-            ).to.be.an("array");
+            ).to.be.an(
+                "array"
+            );
 
             expect(
                 response.body.payload.documents
@@ -154,13 +220,17 @@ describe("Uploads API", function () {
                 response.body.payload
                     .documents[0]
                     .documentType
-            ).to.equal("DNI");
+            ).to.equal(
+                "DNI"
+            );
 
             expect(
                 response.body.payload
                     .documents[0]
                     .mimetype
-            ).to.equal("image/png");
+            ).to.equal(
+                "image/png"
+            );
 
             expect(
                 fs.existsSync(
@@ -171,6 +241,7 @@ describe("Uploads API", function () {
                     )
                 )
             ).to.equal(true);
+
         }
     );
 
@@ -194,13 +265,16 @@ describe("Uploads API", function () {
 
             expect(
                 response.body.status
-            ).to.equal("error");
+            ).to.equal(
+                "error"
+            );
 
             expect(
                 response.body.error
             ).to.equal(
                 "FILE_REQUIRED"
             );
+
         }
     );
 
@@ -230,6 +304,7 @@ describe("Uploads API", function () {
                         {
                             filename:
                                 "documento.png",
+
                             contentType:
                                 "image/png",
                         }
@@ -252,7 +327,10 @@ describe("Uploads API", function () {
 
             expect(
                 filesAfter
-            ).to.equal(filesBefore);
+            ).to.equal(
+                filesBefore
+            );
+
         }
     );
 
@@ -277,6 +355,7 @@ describe("Uploads API", function () {
                         {
                             filename:
                                 "archivo.webp",
+
                             contentType:
                                 "image/webp",
                         }
@@ -291,6 +370,7 @@ describe("Uploads API", function () {
             ).to.equal(
                 "INVALID_FILE_TYPE"
             );
+
         }
     );
 
@@ -311,6 +391,7 @@ describe("Uploads API", function () {
                         {
                             filename:
                                 "receipt.png",
+
                             contentType:
                                 "image/png",
                         }
@@ -322,7 +403,9 @@ describe("Uploads API", function () {
 
             expect(
                 response.body.status
-            ).to.equal("success");
+            ).to.equal(
+                "success"
+            );
 
             expect(
                 response.body.message
@@ -338,13 +421,17 @@ describe("Uploads API", function () {
                 response.body.payload
                     .receipt
                     .documentType
-            ).to.equal("RECEIPT");
+            ).to.equal(
+                "RECEIPT"
+            );
 
             expect(
                 response.body.payload
                     .receipt
                     .mimetype
-            ).to.equal("image/png");
+            ).to.equal(
+                "image/png"
+            );
 
             expect(
                 fs.existsSync(
@@ -355,6 +442,7 @@ describe("Uploads API", function () {
                     )
                 )
             ).to.equal(true);
+
         }
     );
 
@@ -383,6 +471,7 @@ describe("Uploads API", function () {
                         {
                             filename:
                                 "receipt.png",
+
                             contentType:
                                 "image/png",
                         }
@@ -405,7 +494,161 @@ describe("Uploads API", function () {
 
             expect(
                 filesAfter
-            ).to.equal(filesBefore);
+            ).to.equal(
+                filesBefore
+            );
+
         }
     );
+
+    it(
+        "debe subir correctamente un comprobante de envío",
+        async function () {
+
+            const response =
+                await request(app)
+                    .post(
+                        `/api/uploads/shipments/${shipment._id}/receipt`
+                    )
+                    .attach(
+                        "file",
+                        Buffer.from(
+                            "comprobante de envío"
+                        ),
+                        {
+                            filename:
+                                "shipment-receipt.png",
+
+                            contentType:
+                                "image/png",
+                        }
+                    );
+
+            expect(
+                response.status
+            ).to.equal(200);
+
+            expect(
+                response.body.status
+            ).to.equal(
+                "success"
+            );
+
+            expect(
+                response.body.message
+            ).to.equal(
+                "Comprobante del envío cargado correctamente."
+            );
+
+            expect(
+                response.body.payload.receipt
+            ).to.exist;
+
+            expect(
+                response.body.payload
+                    .receipt
+                    .documentType
+            ).to.equal(
+                "RECEIPT"
+            );
+
+            expect(
+                response.body.payload
+                    .receipt
+                    .mimetype
+            ).to.equal(
+                "image/png"
+            );
+
+            expect(
+                fs.existsSync(
+                    path.resolve(
+                        response.body.payload
+                            .receipt
+                            .path
+                    )
+                )
+            ).to.equal(true);
+
+            const shipmentInDatabase =
+                await Shipment.findById(
+                    shipment._id
+                );
+
+            expect(
+                shipmentInDatabase.receipt
+            ).to.exist;
+
+            expect(
+                shipmentInDatabase
+                    .receipt
+                    .documentType
+            ).to.equal(
+                "RECEIPT"
+            );
+
+        }
+    );
+
+    it(
+        "debe devolver SHIPMENT_NOT_FOUND si el envío no existe",
+        async function () {
+
+            const filesBefore =
+                fs.readdirSync(
+                    uploadsReceiptsPath
+                ).length;
+
+            const fakeShipmentId =
+                "64b64cfa1234567890123456";
+
+            const response =
+                await request(app)
+                    .post(
+                        `/api/uploads/shipments/${fakeShipmentId}/receipt`
+                    )
+                    .attach(
+                        "file",
+                        Buffer.from(
+                            "comprobante inválido"
+                        ),
+                        {
+                            filename:
+                                "shipment-receipt.png",
+
+                            contentType:
+                                "image/png",
+                        }
+                    );
+
+            expect(
+                response.status
+            ).to.equal(404);
+
+            expect(
+                response.body.status
+            ).to.equal(
+                "error"
+            );
+
+            expect(
+                response.body.error
+            ).to.equal(
+                "SHIPMENT_NOT_FOUND"
+            );
+
+            const filesAfter =
+                fs.readdirSync(
+                    uploadsReceiptsPath
+                ).length;
+
+            expect(
+                filesAfter
+            ).to.equal(
+                filesBefore
+            );
+
+        }
+    );
+
 });

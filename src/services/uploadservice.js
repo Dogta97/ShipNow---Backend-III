@@ -1,11 +1,18 @@
 import fs from "fs";
+
 import path from "path";
 
 import userRepository from "../repositories/user.repository.js";
+
 import orderRepository from "../repositories/order.repository.js";
 
+import shipmentRepository from "../repositories/shipmentrepository.js";
+
 import AppError from "../errors/AppError.js";
-import { ERROR_TYPES } from "../errors/errorDictionary.js";
+
+import {
+    ERROR_TYPES,
+} from "../errors/errorDictionary.js";
 
 import logger from "../config/logger.js";
 
@@ -23,10 +30,13 @@ class UploadService {
         file,
         documentType
     ) {
+
         if (!file) {
+
             throw new AppError(
                 ERROR_TYPES.FILE_REQUIRED
             );
+
         }
 
         try {
@@ -37,9 +47,11 @@ class UploadService {
                     documentType
                 )
             ) {
+
                 throw new AppError(
                     ERROR_TYPES.INVALID_DOCUMENT_TYPE
                 );
+
             }
 
             const user =
@@ -48,9 +60,11 @@ class UploadService {
                 );
 
             if (!user) {
+
                 throw new AppError(
                     ERROR_TYPES.USER_NOT_FOUND
                 );
+
             }
 
             const metadata =
@@ -66,9 +80,11 @@ class UploadService {
                 );
 
             if (!updatedUser) {
+
                 throw new AppError(
                     ERROR_TYPES.FILE_UPLOAD_ERROR
                 );
+
             }
 
             logger.info(
@@ -87,7 +103,9 @@ class UploadService {
                 error instanceof AppError ||
                 error.name === "CastError"
             ) {
+
                 throw error;
+
             }
 
             logger.error(
@@ -97,17 +115,22 @@ class UploadService {
             throw new AppError(
                 ERROR_TYPES.FILE_UPLOAD_ERROR
             );
+
         }
+
     }
 
     async uploadOrderReceipt(
         orderId,
         file
     ) {
+
         if (!file) {
+
             throw new AppError(
                 ERROR_TYPES.FILE_REQUIRED
             );
+
         }
 
         try {
@@ -118,9 +141,11 @@ class UploadService {
                 );
 
             if (!order) {
+
                 throw new AppError(
                     ERROR_TYPES.ORDER_NOT_FOUND
                 );
+
             }
 
             const metadata =
@@ -136,9 +161,11 @@ class UploadService {
                 );
 
             if (!updatedOrder) {
+
                 throw new AppError(
                     ERROR_TYPES.FILE_UPLOAD_ERROR
                 );
+
             }
 
             logger.info(
@@ -157,7 +184,9 @@ class UploadService {
                 error instanceof AppError ||
                 error.name === "CastError"
             ) {
+
                 throw error;
+
             }
 
             logger.error(
@@ -167,26 +196,115 @@ class UploadService {
             throw new AppError(
                 ERROR_TYPES.FILE_UPLOAD_ERROR
             );
+
         }
+
+    }
+
+    async uploadShipmentReceipt(
+        shipmentId,
+        file
+    ) {
+
+        if (!file) {
+
+            throw new AppError(
+                ERROR_TYPES.FILE_REQUIRED
+            );
+
+        }
+
+        try {
+
+            const shipment =
+                await shipmentRepository.getById(
+                    shipmentId
+                );
+
+            if (!shipment) {
+
+                throw new AppError(
+                    ERROR_TYPES.SHIPMENT_NOT_FOUND
+                );
+
+            }
+
+            const metadata =
+                this.buildMetadata(
+                    file,
+                    "RECEIPT"
+                );
+
+            const updatedShipment =
+                await shipmentRepository.addReceipt(
+                    shipmentId,
+                    metadata
+                );
+
+            if (!updatedShipment) {
+
+                throw new AppError(
+                    ERROR_TYPES.FILE_UPLOAD_ERROR
+                );
+
+            }
+
+            logger.info(
+                `Comprobante asociado correctamente al envío ${shipmentId}.`
+            );
+
+            return updatedShipment;
+
+        } catch (error) {
+
+            await this.deleteFileIfExists(
+                file.path
+            );
+
+            if (
+                error instanceof AppError ||
+                error.name === "CastError"
+            ) {
+
+                throw error;
+
+            }
+
+            logger.error(
+                `Error al guardar comprobante del envío ${shipmentId}: ${error.message}`
+            );
+
+            throw new AppError(
+                ERROR_TYPES.FILE_UPLOAD_ERROR
+            );
+
+        }
+
     }
 
     buildMetadata(
         file,
         documentType
     ) {
+
         return {
+
             originalName:
                 file.originalname,
 
             filename:
                 file.filename,
 
-            path: path
-                .relative(
-                    process.cwd(),
-                    file.path
-                )
-                .replace(/\\/g, "/"),
+            path:
+                path
+                    .relative(
+                        process.cwd(),
+                        file.path
+                    )
+                    .replace(
+                        /\\/g,
+                        "/"
+                    ),
 
             mimetype:
                 file.mimetype,
@@ -198,12 +316,15 @@ class UploadService {
 
             uploadedAt:
                 new Date(),
+
         };
+
     }
 
     async deleteFileIfExists(
         filePath
     ) {
+
         if (!filePath) {
             return;
         }
@@ -216,13 +337,20 @@ class UploadService {
 
         } catch (error) {
 
-            if (error.code !== "ENOENT") {
+            if (
+                error.code !== "ENOENT"
+            ) {
+
                 logger.error(
                     `No se pudo eliminar el archivo ${filePath}: ${error.message}`
                 );
+
             }
+
         }
+
     }
+
 }
 
 export {

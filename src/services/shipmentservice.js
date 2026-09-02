@@ -28,7 +28,6 @@ class ShipmentService {
             !Number.isInteger(page) ||
             page <= 0
         ) {
-
             throw new AppError(
                 ERROR_TYPES.INVALID_DATA
             );
@@ -39,7 +38,6 @@ class ShipmentService {
             limit <= 0 ||
             limit > 100
         ) {
-
             throw new AppError(
                 ERROR_TYPES.INVALID_DATA
             );
@@ -51,7 +49,6 @@ class ShipmentService {
                 SHIPMENT_STATUS
             ).includes(status)
         ) {
-
             throw new AppError(
                 ERROR_TYPES.INVALID_STATUS
             );
@@ -73,7 +70,6 @@ class ShipmentService {
             );
 
         return {
-
             status: "success",
 
             payload: shipments,
@@ -91,6 +87,35 @@ class ShipmentService {
                     page > 1,
             },
         };
+
+    }
+
+    async getShipmentByTrackingNumber(
+        trackingNumber
+    ) {
+
+        if (
+            !trackingNumber ||
+            !trackingNumber.trim()
+        ) {
+            throw new AppError(
+                ERROR_TYPES.INVALID_DATA
+            );
+        }
+
+        const shipment =
+            await shipmentRepository.getByTrackingNumber(
+                trackingNumber.trim()
+            );
+
+        if (!shipment) {
+            throw new AppError(
+                ERROR_TYPES.SHIPMENT_NOT_FOUND
+            );
+        }
+
+        return shipment;
+
     }
 
     async getShipmentById(id) {
@@ -101,13 +126,13 @@ class ShipmentService {
             );
 
         if (!shipment) {
-
             throw new AppError(
                 ERROR_TYPES.SHIPMENT_NOT_FOUND
             );
         }
 
         return shipment;
+
     }
 
     async createShipment(
@@ -119,7 +144,6 @@ class ShipmentService {
             !shipmentData.origin ||
             !shipmentData.destination
         ) {
-
             throw new AppError(
                 ERROR_TYPES.INVALID_DATA
             );
@@ -131,7 +155,6 @@ class ShipmentService {
             );
 
         if (shipmentExists) {
-
             throw new AppError(
                 ERROR_TYPES.TRACKING_NUMBER_ALREADY_EXISTS
             );
@@ -140,6 +163,7 @@ class ShipmentService {
         return await shipmentRepository.create(
             shipmentData
         );
+
     }
 
     async updateShipment(
@@ -154,13 +178,13 @@ class ShipmentService {
             );
 
         if (!shipment) {
-
             throw new AppError(
                 ERROR_TYPES.SHIPMENT_NOT_FOUND
             );
         }
 
         return shipment;
+
     }
 
     async deleteShipment(id) {
@@ -171,14 +195,15 @@ class ShipmentService {
             );
 
         if (!shipment) {
-
             throw new AppError(
                 ERROR_TYPES.SHIPMENT_NOT_FOUND
             );
         }
 
         return shipment;
+
     }
+
 }
 
 export default new ShipmentService();

@@ -23,11 +23,15 @@ class ShipmentRepository {
         ] = await Promise.all([
 
             Shipment.find(filter)
-                .sort({ createdAt: -1 })
+                .sort({
+                    createdAt: -1,
+                })
                 .skip(skip)
                 .limit(limit),
 
-            Shipment.countDocuments(filter),
+            Shipment.countDocuments(
+                filter
+            ),
 
         ]);
 
@@ -35,11 +39,15 @@ class ShipmentRepository {
             shipments,
             totalDocs,
         };
+
     }
 
     async getById(id) {
 
-        return await Shipment.findById(id);
+        return await Shipment.findById(
+            id
+        );
+
     }
 
     async getByTrackingNumber(
@@ -49,13 +57,17 @@ class ShipmentRepository {
         return await Shipment.findOne({
             trackingNumber,
         });
+
     }
 
-    async create(shipmentData) {
+    async create(
+        shipmentData
+    ) {
 
         return await Shipment.create(
             shipmentData
         );
+
     }
 
     async update(
@@ -67,10 +79,31 @@ class ShipmentRepository {
             id,
             shipmentData,
             {
-                new: true,
+                returnDocument: "after",
                 runValidators: true,
             }
         );
+
+    }
+
+    async addReceipt(
+        id,
+        receipt
+    ) {
+
+        return await Shipment.findByIdAndUpdate(
+            id,
+            {
+                $set: {
+                    receipt,
+                },
+            },
+            {
+                returnDocument: "after",
+                runValidators: true,
+            }
+        );
+
     }
 
     async delete(id) {
@@ -78,7 +111,9 @@ class ShipmentRepository {
         return await Shipment.findByIdAndDelete(
             id
         );
+
     }
+
 }
 
 export default new ShipmentRepository();

@@ -17,10 +17,13 @@ uploads
 coverage
 .nyc_output
 
+test
+
 .vscode
 .idea
 
 .DS_Store
 Thumbs.db
 
-test
+README.md
+docker-compose.yml
